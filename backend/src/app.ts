@@ -1,6 +1,8 @@
 import { errors } from 'celebrate'
+import { nestCsrf } from 'ncsrf';
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
+import helmet from 'helmet';
 import 'dotenv/config'
 import express, { json, urlencoded } from 'express'
 import mongoose from 'mongoose'
@@ -13,7 +15,13 @@ import routes from './routes'
 const { PORT = 3000 } = process.env
 const app = express()
 
+app.use(helmet())
+app.use(helmet.xssFilter())
+app.use(helmet.noSniff())
+app.use(helmet.frameguard({ action: 'deny' }))
+
 app.use(cookieParser())
+app.use(nestCsrf());
 
 app.use(cors())
 // app.use(cors({ origin: ORIGIN_ALLOW, credentials: true }));

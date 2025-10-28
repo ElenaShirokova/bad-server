@@ -6,6 +6,7 @@ import {
     updateProduct,
 } from '../controllers/products'
 import auth, { roleGuardMiddleware } from '../middlewares/auth'
+import sanitizeInput from '../middlewares/sanitizeInput'
 import {
     validateObjId,
     validateProductBody,
@@ -19,6 +20,7 @@ productRouter.get('/', getProducts)
 productRouter.post(
     '/',
     auth,
+    sanitizeInput,
     roleGuardMiddleware(Role.Admin),
     validateProductBody,
     createProduct
@@ -33,6 +35,7 @@ productRouter.delete(
 productRouter.patch(
     '/:productId',
     auth,
+    sanitizeInput,
     roleGuardMiddleware(Role.Admin),
     validateObjId,
     validateProductUpdateBody,
