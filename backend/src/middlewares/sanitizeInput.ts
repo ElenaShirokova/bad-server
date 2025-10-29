@@ -1,10 +1,11 @@
+import { NextFunction, Request, Response } from 'express'
 import DOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
 
 const window = new JSDOM('').window;
 const domPurify = DOMPurify(window);
 
-const sanitizeInput = (req, res, next) => {
+const sanitizeInput = (req: Request, res: Response, next: NextFunction) => {
   if (req.body) {
     Object.keys(req.body).forEach(key => {
       if (typeof req.body[key] === 'string') {
