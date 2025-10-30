@@ -7,6 +7,7 @@ import md5 from 'md5'
 
 import { ACCESS_TOKEN, REFRESH_TOKEN } from '../config'
 import UnauthorizedError from '../errors/unauthorized-error'
+import { phoneRegExp } from '../middlewares/validations'
 
 export enum Role {
     Customer = 'customer',
@@ -81,11 +82,9 @@ const userSchema = new mongoose.Schema<IUser, IUserModel, IUserMethods>(
         phone: {
             type: String,
             validate: {
-                validator: (v: string) => {
-                    return /^\d{10}$/.test(v);
-                },
-                message: 'Номер телефона должен содержать ровно 10 цифр'
-            }
+                validator: (v: string) => phoneRegExp.test(v),
+                message: 'Поле "phone" должно быть валидным телефоном.',
+            },
         },
         lastOrderDate: {
             type: Date,
