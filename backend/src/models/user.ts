@@ -81,9 +81,14 @@ const userSchema = new mongoose.Schema<IUser, IUserModel, IUserMethods>(
         },
         phone: {
             type: String,
+            minlength: [10, 'Минимальная длина номера телефона - 10'],
+            maxlength: [18, 'Максимальная длина номера телефона - 18'],
             validate: {
-                validator: (v: string) => newPhoneRegExp.test(v),
-                message: 'Поле "phone" должно быть валидным телефоном.',
+                validator: (v: string) => {
+                    if (v.length > 18) return false;
+                    return newPhoneRegExp.test(v);
+                },
+                message: 'Поле "phone" должно быть в формате +7 (XXX) XXX XX XX.'
             },
         },
         lastOrderDate: {

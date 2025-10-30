@@ -16,7 +16,7 @@ import { Role } from '../models/user'
 
 const orderRouter = Router()
 
-orderRouter.post('/', auth, orderRateLimiter, sanitizeInput, validateOrderBody, createOrder)
+orderRouter.post('/', auth, validateOrderBody, createOrder)
 orderRouter.get('/all', auth, getOrders)
 orderRouter.get('/all/me', auth, getOrdersCurrentUser)
 orderRouter.get(
