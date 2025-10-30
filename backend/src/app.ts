@@ -9,6 +9,7 @@ import mongoose from 'mongoose'
 import path from 'path'
 import { DB_ADDRESS } from './config'
 import errorHandler from './middlewares/error-handler'
+import { generalRateLimiter } from './middlewares/rateLimit'
 import serveStatic from './middlewares/serverStatic'
 import routes from './routes'
 
@@ -31,6 +32,8 @@ app.use(serveStatic(path.join(__dirname, 'public')))
 
 app.use(urlencoded({ extended: true }))
 app.use(json())
+
+app.use(generalRateLimiter)
 
 app.options('*', cors())
 app.use(routes)
