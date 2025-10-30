@@ -58,7 +58,7 @@ const fileFilter = (
         return cb(null, false)
     }
     // Проверка минимального размера файла (2MB)
-    const minFileSize = 2 * 1024 * 1024 // 2MB в байтах
+    const minFileSize = 2 * 1024 // 2kB в байтах
     if (file.size < minFileSize) {
         return cb(null, false)
     }
