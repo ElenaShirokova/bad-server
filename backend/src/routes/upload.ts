@@ -4,6 +4,6 @@ import fileMiddleware from '../middlewares/file'
 import { uploadRateLimiter } from '../middlewares/rateLimit'
 
 const uploadRouter = Router()
-uploadRouter.post('/', uploadRateLimiter, fileMiddleware.single('file'), uploadFile)
+uploadRouter.post('/', fileMiddleware.single('file'), uploadFile)
 
 export default uploadRouter

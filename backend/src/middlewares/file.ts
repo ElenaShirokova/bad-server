@@ -1,9 +1,22 @@
 import { Request, Express } from 'express'
 import multer, { FileFilterCallback } from 'multer'
 import { join } from 'path'
+import { existsSync, mkdirSync } from 'fs'
 
 type DestinationCallback = (error: Error | null, destination: string) => void
 type FileNameCallback = (error: Error | null, filename: string) => void
+
+// Создаем директорию если не существует
+const uploadDir = join(
+    __dirname,
+    process.env.UPLOAD_PATH_TEMP
+        ? `../public/${process.env.UPLOAD_PATH_TEMP}`
+        : '../public'
+)
+
+if (!existsSync(uploadDir)) {
+    mkdirSync(uploadDir, { recursive: true })
+}
 
 const storage = multer.diskStorage({
     destination: (
@@ -12,13 +25,7 @@ const storage = multer.diskStorage({
         cb: DestinationCallback
     ) => {
         cb(
-            null,
-            join(
-                __dirname,
-                process.env.UPLOAD_PATH_TEMP
-                    ? `../public/${process.env.UPLOAD_PATH_TEMP}`
-                    : '../public'
-            )
+            null, uploadDir
         )
     },
 
@@ -27,7 +34,10 @@ const storage = multer.diskStorage({
         file: Express.Multer.File,
         cb: FileNameCallback
     ) => {
-        cb(null, file.originalname)
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+        const fileExtension = file.originalname.split('.').pop()
+        const fileName = `${uniqueSuffix}.${fileExtension}`
+        cb(null, fileName)
     },
 })
 
