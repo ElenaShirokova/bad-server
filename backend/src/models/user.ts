@@ -80,7 +80,6 @@ const userSchema = new mongoose.Schema<IUser, IUserModel, IUserMethods>(
         },
         phone: {
             type: String,
-            required: [true, 'Поле "phone" должно быть заполнено'],
             validate: {
                 validator: (v: string) => {
                     return /^\d{10}$/.test(v);
