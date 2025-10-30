@@ -27,8 +27,7 @@ const storage = multer.diskStorage({
         file: Express.Multer.File,
         cb: FileNameCallback
     ) => {
-        const uniqueSuffix = Date.now() + '_';
-        cb(null, uniqueSuffix + file.originalname.split('.').pop())
+        cb(null, file.originalname)
     },
 })
 
