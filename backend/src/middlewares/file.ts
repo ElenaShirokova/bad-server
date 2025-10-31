@@ -42,7 +42,6 @@ const storage = multer.diskStorage({
 })
 
 const types = [
-    'image/png',
     'image/jpg',
     'image/jpeg',
     'image/gif',
@@ -54,7 +53,6 @@ const fileFilter = (
     file: Express.Multer.File,
     cb: FileFilterCallback
 ) => {
-    console.log(file.mimetype)
     // Проверка типа
     if (!types.includes(file.mimetype)) {
         return cb(null, false)
