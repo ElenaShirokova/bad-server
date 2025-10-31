@@ -51,15 +51,15 @@ const types = [
 
 const fileFilter = (
     _req: Request,
-    file: Express.Multer.File,
+    _file: Express.Multer.File,
     cb: FileFilterCallback
 ) => {
-    if (!types.includes(file.mimetype)) {
+    if (!types.includes(_file.mimetype)) {
         return cb(null, false)
     }
     // Проверка минимального размера файла (2MB)
     const minFileSize = 2 * 1024 // 2kB в байтах
-    if (file.size < minFileSize) {
+    if (_file.size < minFileSize) {
         return cb(null, false)
     }
 
