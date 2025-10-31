@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { FilterQuery, Error as MongooseError, Types } from 'mongoose'
 import BadRequestError from '../errors/bad-request-error'
+import ForbiddenError from 'errors/forbidden-error'
 import NotFoundError from '../errors/not-found-error'
 import Order, { IOrder } from '../models/order'
 import Product, { IProduct } from '../models/product'
@@ -15,6 +16,9 @@ export const getOrders = async (
     res: Response,
     next: NextFunction
 ) => {
+    if (res.locals.user.roles === 'customer') {
+        return next(new ForbiddenError('Нет прав'))
+    }
     try {
         const {
             page = 1,
