@@ -51,25 +51,18 @@ const types = [
 
 const fileFilter = (
     _req: Request,
-    _file: Express.Multer.File,
+    file: Express.Multer.File,
     cb: FileFilterCallback
 ) => {
-    if (!types.includes(_file.mimetype)) {
+    console.log(file.mimetype)
+    // Проверка типа
+    if (!types.includes(file.mimetype)) {
         return cb(null, false)
     }
-    // Проверка минимального размера файла (2MB)
-    const minFileSize = 2 * 1024 // 2kB в байтах
-    if (_file.size < minFileSize) {
-        return cb(null, false)
-    }
-
     return cb(null, true)
 }
 
 export default multer({ 
-    storage, 
-    fileFilter, 
-    limits: {
-        fileSize: 10 * 1024 * 1024, // 10MB максимум
-    }
+    storage: storage, 
+    fileFilter: fileFilter, 
 })

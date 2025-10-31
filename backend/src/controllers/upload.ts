@@ -10,6 +10,10 @@ export const uploadFile = async (
     if (!req.file) {
         return next(new BadRequestError('Файл не загружен'))
     }
+    const minFileSize = 2 * 1024 // 2kB в байтах
+    if (req.file.size < minFileSize) {
+        return next(new BadRequestError('Файл не загружен: Минимальный размер загружаемого файла 2кВ'))
+    }
     try {
         return res.status(constants.HTTP_STATUS_CREATED).send({
             fileName: req.file.filename,
