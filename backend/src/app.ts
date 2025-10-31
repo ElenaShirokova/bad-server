@@ -1,5 +1,4 @@
 import { errors } from 'celebrate'
-import { nestCsrf } from 'ncsrf';
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import helmet from 'helmet';
@@ -25,7 +24,6 @@ app.use(helmet.noSniff())
 app.use(helmet.frameguard({ action: 'deny' }))
 
 app.use(cookieParser())
-app.use(nestCsrf());
 
 app.use(cors({ origin: process.env.ORIGIN_ALLOW, credentials: true }));
 // app.use(express.static(path.join(__dirname, 'public')));
