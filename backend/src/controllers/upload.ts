@@ -1,6 +1,30 @@
 import { NextFunction, Request, Response } from 'express'
 import { constants } from 'http2'
+import { fileTypeFromBuffer } from 'file-type'
+import { existsSync, mkdirSync } from 'fs'
+import { writeFile } from 'fs/promises'
+import { join } from 'path'
 import BadRequestError from '../errors/bad-request-error'
+
+const types = [
+    'image/png',
+    'image/jpg',
+    'image/jpeg',
+    'image/gif',
+    'image/svg+xml',
+]
+
+// Создаем директорию если не существует
+const uploadDir = join(
+    __dirname,
+    process.env.UPLOAD_PATH_TEMP
+        ? `../public/${process.env.UPLOAD_PATH_TEMP}`
+        : '../public'
+)
+
+if (!existsSync(uploadDir)) {
+    mkdirSync(uploadDir, { recursive: true })
+}
 
 export const uploadFile = async (
     req: Request,
@@ -10,13 +34,24 @@ export const uploadFile = async (
     if (!req.file) {
         return next(new BadRequestError('Файл не загружен'))
     }
+    const minFileSize = 2 * 1024 // 2kB в байтах
+    if (req.file.size < minFileSize) {
+        return next(new BadRequestError('Файл не загружен: Минимальный размер загружаемого файла 2кВ'))
+    }
     try {
-        const fileName = process.env.UPLOAD_PATH
-            ? `/${process.env.UPLOAD_PATH}/${req.file.filename}`
-            : `/${req.file?.filename}`
+        const fileType = await fileTypeFromBuffer(req.file.buffer)
+        if (!fileType || !types.includes(fileType.mime)) {
+            return next(new BadRequestError('Содержимое файла не соответствует разрешенным типам'))
+        }
+
+        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`
+        const fileExtension = req.file.originalname.split('.').pop()
+        const fileName = `${uniqueSuffix}.${fileExtension}`
+        const filePath = join(uploadDir, fileName)
+        await writeFile(filePath, req.file.buffer)
         return res.status(constants.HTTP_STATUS_CREATED).send({
             fileName,
-            originalName: req.file?.originalname,
+            originalName: req.file.originalname,
         })
     } catch (error) {
         return next(error)

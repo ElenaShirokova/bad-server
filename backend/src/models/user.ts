@@ -7,6 +7,7 @@ import md5 from 'md5'
 
 import { ACCESS_TOKEN, REFRESH_TOKEN } from '../config'
 import UnauthorizedError from '../errors/unauthorized-error'
+import { newPhoneRegExp } from '../middlewares/validations'
 
 export enum Role {
     Customer = 'customer',
@@ -80,6 +81,15 @@ const userSchema = new mongoose.Schema<IUser, IUserModel, IUserMethods>(
         },
         phone: {
             type: String,
+            minlength: [10, 'Минимальная длина номера телефона - 10'],
+            maxlength: [18, 'Максимальная длина номера телефона - 18'],
+            validate: {
+                validator: (v: string) => {
+                    if (v.length > 18) return false;
+                    return newPhoneRegExp.test(v);
+                },
+                message: 'Поле "phone" должно быть в формате +7 (XXX) XXX XX XX.'
+            },
         },
         lastOrderDate: {
             type: Date,
@@ -106,11 +116,9 @@ const userSchema = new mongoose.Schema<IUser, IUserModel, IUserMethods>(
         toJSON: {
             virtuals: true,
             transform: (_doc, ret) => {
-                delete ret.tokens
-                delete ret.password
-                delete ret._id
-                delete ret.roles
-                return ret
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { tokens, password, _id, roles, ...rest } = ret;
+            return rest
             },
         },
     }
@@ -135,7 +143,7 @@ userSchema.methods.generateAccessToken = function generateAccessToken() {
     // Создание accessToken токена возможно в контроллере авторизации
     return jwt.sign(
         {
-            _id: user._id.toString(),
+            _id: user._id,
             email: user.email,
         },
         ACCESS_TOKEN.secret,
@@ -152,7 +160,7 @@ userSchema.methods.generateRefreshToken =
         // Создание refresh токена возможно в контроллере авторизации/регистрации
         const refreshToken = jwt.sign(
             {
-                _id: user._id.toString(),
+                _id: user._id,
             },
             REFRESH_TOKEN.secret,
             {

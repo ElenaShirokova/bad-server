@@ -1,7 +1,7 @@
 /* eslint-disable prefer-arrow-callback */
 import mongoose, { Document, Schema, Types } from 'mongoose'
 import validator from 'validator'
-import { PaymentType, phoneRegExp } from '../middlewares/validations'
+import { PaymentType } from '../middlewares/validations'
 import Counter from './counter'
 import User from './user'
 
@@ -59,10 +59,8 @@ const orderSchema: Schema = new Schema(
         phone: {
             type: String,
             required: [true, 'Поле "phone" должно быть заполнено'],
-            validate: {
-                validator: (v: string) => phoneRegExp.test(v),
-                message: 'Поле "phone" должно быть валидным телефоном.',
-            },
+            minlength: [10, 'Минимальная длина номера телефона - 10'],
+            maxlength: [18, 'Максимальная длина номера телефона - 18'],
         },
         comment: {
             type: String,
