@@ -50,7 +50,7 @@ export const uploadFile = async (
         const filePath = join(uploadDir, fileName)
         await writeFile(filePath, req.file.buffer)
         return res.status(constants.HTTP_STATUS_CREATED).send({
-            fileName: req.file.filename,
+            fileName: fileName,
             originalName: req.file.originalname,
         })
     } catch (error) {
