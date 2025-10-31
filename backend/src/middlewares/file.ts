@@ -1,4 +1,4 @@
-import { Request } from 'express'
+import { Request, Express } from 'express'
 import multer, { FileFilterCallback } from 'multer'
 
 const types = [
@@ -24,8 +24,8 @@ const fileFilter = (
 }
 
 export default multer({ 
-    storage: storage, 
-    fileFilter: fileFilter,
+    storage, 
+    fileFilter,
     limits: {
         fileSize: 10 * 1024 * 1024, // Максимум 10MB
     }

@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express'
 import { constants } from 'http2'
-import BadRequestError from '../errors/bad-request-error'
 import { fileTypeFromBuffer } from 'file-type'
 import { existsSync, mkdirSync } from 'fs'
 import { writeFile } from 'fs/promises'
 import { join } from 'path'
+import BadRequestError from '../errors/bad-request-error'
 
 const types = [
     'image/png',
@@ -44,13 +44,13 @@ export const uploadFile = async (
             return next(new BadRequestError('Содержимое файла не соответствует разрешенным типам'))
         }
 
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`
         const fileExtension = req.file.originalname.split('.').pop()
         const fileName = `${uniqueSuffix}.${fileExtension}`
         const filePath = join(uploadDir, fileName)
         await writeFile(filePath, req.file.buffer)
         return res.status(constants.HTTP_STATUS_CREATED).send({
-            fileName: fileName,
+            fileName,
             originalName: req.file.originalname,
         })
     } catch (error) {

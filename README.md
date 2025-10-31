@@ -13,3 +13,5 @@ docker compose up -d
 5. На странице http://localhost/login/ можно авторизоваться.
 6. Админка находится по адресу http://localhost/admin/
 
+## Автор
+[Елена Широкова, когорта 31](https://github.com/ElenaShirokova)

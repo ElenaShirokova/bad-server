@@ -116,6 +116,7 @@ const userSchema = new mongoose.Schema<IUser, IUserModel, IUserMethods>(
         toJSON: {
             virtuals: true,
             transform: (_doc, ret) => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { tokens, password, _id, roles, ...rest } = ret;
             return rest
             },
