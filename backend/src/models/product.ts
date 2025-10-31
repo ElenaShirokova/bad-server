@@ -1,5 +1,5 @@
 import { unlink } from 'fs'
-import mongoose, { Document } from 'mongoose'
+import mongoose, { Document, Types } from 'mongoose'
 import { join } from 'path'
 
 export interface IFile {
@@ -13,6 +13,7 @@ export interface IProduct extends Document {
     category: string
     description: string
     price: number
+    _id: Types.ObjectId
 }
 
 const cardsSchema = new mongoose.Schema<IProduct>(
