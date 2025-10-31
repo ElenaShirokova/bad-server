@@ -10,6 +10,28 @@ import escapeRegExp from '../utils/escapeRegExp';
 // eslint-disable-next-line max-len
 // GET /orders?page=2&limit=5&sort=totalAmount&order=desc&orderDateFrom=2024-07-01&orderDateTo=2024-08-01&status=delivering&totalAmountFrom=100&totalAmountTo=1000&search=%2B1
 
+// Функция для проверки на опасные операторы MongoDB
+const hasDangerousOperators = (obj: any): boolean => {
+  if (typeof obj !== 'object' || obj === null) return false;
+  
+  const dangerousOperators = [
+    '$where', '$function', '$expr', '$accumulator', 
+    '$code', '$eval', '$js', '$runCommand'
+  ];
+  const keys = Object.keys(obj)
+  return keys.some((key) => {
+    // Проверяем ключи верхнего уровня
+    if (dangerousOperators.includes(key)) {
+      return true;
+    }
+    // Рекурсивно проверяем вложенные объекты
+    if (typeof obj[key] === 'object' && hasDangerousOperators(obj[key])) {
+      return true;
+    }
+    return false;
+  });
+};
+
 export const getOrders = async (
     req: Request,
     res: Response,
@@ -35,6 +57,10 @@ export const getOrders = async (
 
         if (status) {
             if (typeof status === 'object') {
+                // Проверяем на опасные операторы перед использованием
+                if (hasDangerousOperators(status)) {
+                    throw new BadRequestError('Обнаружены запрещенные операторы в фильтре');
+                }
                 Object.assign(filters, status)
             }
             if (typeof status === 'string') {
