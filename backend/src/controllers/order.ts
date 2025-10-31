@@ -18,7 +18,6 @@ export const getOrders = async (
     try {
         const {
             page = 1,
-            limit = 10,
             sortField = 'createdAt',
             sortOrder = 'desc',
             status,
@@ -28,6 +27,12 @@ export const getOrders = async (
             orderDateTo,
             search,
         } = req.query
+
+        let limit = req.query.limit
+        // Ограничиваем максимальный лимит
+        if (Number(limit) > 10) {
+           limit = String(10)
+        }
 
         const filters: FilterQuery<Partial<IOrder>> = {}
 
@@ -158,7 +163,13 @@ export const getOrdersCurrentUser = async (
 ) => {
     try {
         const userId = res.locals.user._id
-        const { search, page = 1, limit = 5 } = req.query
+        const { search, page = 1} = req.query
+        let limit = req.query.limit
+        // Ограничиваем максимальный лимит
+        if (Number(limit) > 5) {
+           limit = String(5)
+        }
+
         const options = {
             skip: (Number(page) - 1) * Number(limit),
             limit: Number(limit),

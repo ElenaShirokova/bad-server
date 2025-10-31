@@ -16,7 +16,6 @@ export const getCustomers = async (
     try {
         const {
             page = 1,
-            limit = 10,
             sortField = 'createdAt',
             sortOrder = 'desc',
             registrationDateFrom,
@@ -29,6 +28,12 @@ export const getCustomers = async (
             orderCountTo,
             search,
         } = req.query
+
+        let limit = req.query.limit
+        // Ограничиваем максимальный лимит
+        if (Number(limit) > 10) {
+           limit = String(10)
+        }
 
         const filters: FilterQuery<Partial<IUser>> = {}
 
